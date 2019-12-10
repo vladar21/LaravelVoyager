@@ -1,0 +1,5 @@
+Currency: idcurrency(int), name(txt), flagbase(bool)
+
+Rates: idrates(int), idcurrency(int), date(date), value(decimal)
+
+App\Currency  
