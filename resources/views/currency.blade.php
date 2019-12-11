@@ -28,16 +28,16 @@
                     
                     <?php 
                     
-                    foreach($names as $name)
-                    echo '<option>'.$name.'</option>';?>
+                    foreach(array_keys($exchangeRates['rates']) as $rate)
+                    echo '<option>'.$rate.'</option>';?>
                         
                     </select> 
                     <br> 
                     <label for="geeks2">To choice currencies, that one rates you want (shift Ctrl):</label> 
                     <select multiple class="form-control" id="symbolsid" name="symbols"> 
 
-                    <?php foreach($names as $name)
-                    echo '<option>'.$name.'</option>';?>
+                    <?php foreach(array_keys($exchangeRates['rates']) as $rate)
+                    echo '<option>'.$rate.'</option>';?>
 
                     </select> 
                 </div> 

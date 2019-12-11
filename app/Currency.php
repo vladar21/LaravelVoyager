@@ -18,15 +18,45 @@ class Currency extends Model
         $rate->save();
     }
 
-    public static function api($request)
+    public static function api($RequestUri)
     {
-        //dd($request);
+       
         // set API Endpoint and API key 
-        //$endpoint = 'latest';
+        if (count(explode("/",$RequestUri))>1)
+        {
+            $endpoint = explode("?", explode("/",$RequestUri)[2])[0];
+            $url = explode("?", explode("/",$RequestUri)[2])[1];
+            $arrayurl = explode("&", $url);
+            $urlapi = "";
+            $symbols = "&symbols=";
+            foreach($arrayurl as $a)
+            {
+                if (strpos($a, "symbols") !== false) 
+                {
+                    $symbols = $symbols.explode("=", $a)[1].",";
+                    
+                    continue;
+                }
+                
+                $urlapi = $urlapi."&".$a;
+            }
+            $symbols = mb_substr($symbols, 0, -1);
+            $urlapi = $urlapi.$symbols;
+        }
+        else
+        {
+            $endpoint = $RequestUri;
+            $urlapi = "";
+        }
+        
+        //dd($urlapi);
+        
         $access_key = '8e996550c4c1e3a717f4bb88f4173fec';
-
+        
+        dd('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.$urlapi);
         // Initialize CURL:
-        $ch = curl_init('http://data.fixer.io/api/'.$request.'?access_key='.$access_key.'');
+        $ch = curl_init('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.'&'.$urlapi);
+        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         // Store the data:

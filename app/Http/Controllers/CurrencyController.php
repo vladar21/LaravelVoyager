@@ -10,15 +10,14 @@ class CurrencyController extends Controller
     public function index()
     {
         $exchangeRates = \App\Currency::api('latest');
-        $names = $exchangeRates['rates']->rates;
-        dd($names);
-        return view('currency', ['names' => $names]);
+       
+        return view('currency', ['exchangeRates' => $exchangeRates]);
     }
 
     public function getcurrency(Request $request)
     {
-        
-        $fields = \App\Currency::api($request);
+        $RequestUri = $request->getRequestUri();
+        $fields = \App\Currency::api($RequestUri);
         dd($fields);
         //$currency = \App\Currency::add($fields);
         dd($currency);
