@@ -7,10 +7,18 @@ use Illuminate\Http\Request;
 
 class CurrencyController extends Controller
 {
-    public function getcurrency($endpoint)
+    public function index()
+    {
+        $exchangeRates = \App\Currency::api('latest');
+        $names = $exchangeRates['rates']->rates;
+        dd($names);
+        return view('currency', ['names' => $names]);
+    }
+
+    public function getcurrency(Request $request)
     {
         
-        $fields = \App\Currency::api($endpoint);
+        $fields = \App\Currency::api($request);
         dd($fields);
         //$currency = \App\Currency::add($fields);
         dd($currency);

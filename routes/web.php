@@ -15,7 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/api/{endpoint}', 'CurrencyController@getcurrency');
+Route::get('/currency', 'CurrencyController@index');
+Route::get('/api/{request}', 'CurrencyController@getcurrency');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
