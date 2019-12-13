@@ -21,23 +21,24 @@
         <div class="container"> 
             <h1 style="color:green">Configuration</h1> 
   
-            <form action="/api/latest" method="GET"> 
-                <div class="form-group col-sm-3"> 
+            <form action="/nbu" method="GET"> 
+                <div class="form-group col-sm-4"> 
                     <label for="geeks1">To choice base currency:</label> 
                     <select class="form-control" id="basecurrencyid" name="base"> 
                     
                     <?php 
                     
-                    foreach(array_keys($exchangeRates['rates']) as $rate)
-                    echo '<option>'.$rate.'</option>';?>
+                    foreach($currencies as $currency)
+                    echo '<option>'.$currency.'</option>';?>
                         
                     </select> 
                     <br> 
-                    <label for="geeks2">To choice currencies, that one rates you want (shift Ctrl):</label> 
+                    <label for="geeks2">To choice currencies, that ones rate you want (shift Ctrl):</label> 
                     <select multiple class="form-control" id="symbolsid" name="symbols"> 
 
-                    <?php foreach(array_keys($exchangeRates['rates']) as $rate)
-                    echo '<option>'.$rate.'</option>';?>
+                    <?php foreach($currencies as $currency)
+                    
+                    echo '<option>'.$currency.'</option>';?>
 
                     </select> 
                 </div> 

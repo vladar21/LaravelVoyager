@@ -3,9 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Rate;
+use Carbon\Carbon;
 
 class Currency extends Model
 {
+    public $timestamps = false; // Чтобы Laravel Eloquent автоматически не добавляла данные в поля created_at и updated_at
+
     public function rate()
     {
         return $this->hasMany('App\Rate');
@@ -16,6 +20,31 @@ class Currency extends Model
         $rate = new static;
         $rate->fill($fields);
         $rate->save();
+    }
+
+    public static function indexNbu($currentDate)
+    {
+        $currentDate = Carbon::create($currentDate);        
+        $currentDate->toDateString();
+        $currentDate = $currentDate->format('Ymd');  
+        
+        $ch = curl_init('https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date='.$currentDate.'&json');
+    
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // Store the data:
+        $json = curl_exec($ch);
+    
+        curl_close($ch);
+
+        $exchangeRates = json_decode($json, true);
+       
+        foreach($exchangeRates as $exch)
+        {            
+            $currency = new Currency;
+            $currency->namecurrency = $exch['txt'];
+            $currency->save();
+        } 
+       
     }
 
     public static function api($RequestUri)
