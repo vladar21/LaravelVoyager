@@ -23,16 +23,21 @@ class Rate extends Model
         $weekenddays = $finishDate->diffInWeekendDays($startDate);
         
         $finishDate = $finishDate->subDays($weekenddays);
-        
+        //dd($startDate);
+        //dd($finishDate);
         
         do{
             if ($startDate->format('w') != 6 || $startDate->format('w') != 0)
             {
                 $ch = curl_init('https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date='.$startDate->format('Ymd').'&json');
+                
+                //dd($ch);
             
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 // Store the data:
                 $json = curl_exec($ch);
+
+                //dd($json);
                 
                 curl_close($ch);
             
@@ -41,16 +46,24 @@ class Rate extends Model
                 foreach($exchangeRates as $exch)
                 { 
                     $rate = new Rate;                
-                    $rate->currency_id = Currency::where('namecurrency', $exch['txt'])->first()->idcurrency;                           
+                    $rate->currency_id = Currency::where('namecurrency', $exch['txt'])->first()->id;                           
                     $rate->value = $exch['rate'];
                     $rate->date = Carbon::create($exch['exchangedate']);                 
                     $rate->save();
                 } 
+                // вводим данные по украинской гривне
+                $rate = new Rate;                
+                $rate->currency_id = Currency::where('codecurrency', 'UAH')->first()->id;
+                $rate->value = 100;
+                $rate->date = $startDate;                 
+                $rate->save();
             }               
              $startDate = $startDate->subDay();      
              
          }
          while($startDate > $finishDate);
+
+        
        
     }
 }

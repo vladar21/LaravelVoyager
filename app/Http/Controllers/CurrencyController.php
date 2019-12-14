@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Currency;
@@ -14,32 +15,64 @@ class CurrencyController extends Controller
         $nothing = true;
         $currentDate = Carbon::now()->format('d.m.Y');
         
-        $dates = Rate::all('date')->pluck('date'); 
+        $rates = Rate::all('date');    
         
-        foreach($dates as $date)
+        $dates = ($rates && $rates->count())?(Rate::all('date')->pluck('date')[0]):($currentDate);         
+        
+        if ($dates != $currentDate)
         {
-             if ($date == $currentDate)
-             {
-                $nothing = false;
-                break;
-             }
+        $nothing = false;               
         }
+      
         if ($nothing) 
         {
+            \App\Currency::truncate();
+            \App\Rate::truncate();
             \App\Currency::indexNbu($currentDate);
             \App\Rate::indexNbu($currentDate);
         }
-        // \App\Currency::indexNbu($currentDate);
-
-        //$currencies = Currency::all()->getatri;
-        $currencies = Currency::all('namecurrency')->pluck('namecurrency');
-        
+       
+        $currencies = Currency::all()->sortBy('namecurrency');//all('namecurrency')->pluck('namecurrency');
+       
         return view('currency')->with('currencies', $currencies);
     }
 
     public function getnbu(Request $request)
     {
+        //dd($request);
+        $parametrs = $request->query('base');
+        //dd($parametrs);
+
+        // устанавливаем базовую валюту
+
+        \App\Currency::flagbasereset();
+       
+        $prev = \App\Currency::where('codecurrency', $parametrs)->get()->first();
+        //dd($prev->id);
+        if ($prev && $prev->count()) 
+        {
+           $id = $prev->id;
+        }
         
+        //dd($id);
+        \App\Currency::flagbaseinstall($id);
+        
+        // Сбрасываем предыдущие рабочие валюты
+        \App\Currency::flagworkreset();
+        // устанавливаем рабочие валюты   
+        //$parametrs = $request->get(['symbols']);//->groupBy('symbols')->keys()->all();
+        $parametrs = $request->query('symbols');
+
+        //dd($parametrs);
+        foreach($parametrs as $parametr)
+        {
+            
+            $prev = \App\Currency::where('codecurrency', $parametr)->get()->first();
+            //dd($prev->id);
+            \App\Currency::flagworkinstall($prev->id);
+        }
+
+        return view('chart');//->with('currencies', $currencies);
     }
 
     public function getcurrency(Request $request)

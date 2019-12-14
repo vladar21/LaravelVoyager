@@ -21,29 +21,69 @@ class Currency extends Model
         $rate->fill($fields);
         $rate->save();
     }
-
+    public static function flagbasereset()
+    {
+        $prev = \App\Currency::where('flagbase', 1)->get()->first();
+        //dd($prev);
+        if ($prev && $prev->count()) 
+        {
+            $prev->flagbase = 0;
+            $prev->save();
+        }
+    }
+    public static function flagbaseinstall($id)
+    {
+        $basecurrency = \App\Currency::find($id);
+        $basecurrency->flagbase = 1;
+        $basecurrency->save();
+    }
+    public static function flagworkreset()
+    {
+        $workcurrencies = \App\Currency::where('flagwork', 1)->get();
+        //dd($workcurrencies);
+        foreach($workcurrencies as $workcurrency)
+        {            
+            $workcurrency->flagwork = 0;
+            $workcurrency->save();
+        }        
+    }
+    public static function flagworkinstall($id)
+    {
+        $workcurrency = \App\Currency::find($id);
+        $workcurrency->flagwork = 1;
+        $workcurrency->save();
+    }
     public static function indexNbu($currentDate)
     {
         $currentDate = Carbon::create($currentDate);        
         $currentDate->toDateString();
         $currentDate = $currentDate->format('Ymd');  
         
+        //dd($currentDate);
         $ch = curl_init('https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date='.$currentDate.'&json');
+
+        //dd($ch);
     
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         // Store the data:
         $json = curl_exec($ch);
-    
+        //dd($json);
         curl_close($ch);
 
         $exchangeRates = json_decode($json, true);
-       
+       //dd($exchangeRates);
         foreach($exchangeRates as $exch)
         {            
             $currency = new Currency;
             $currency->namecurrency = $exch['txt'];
+            $currency->codecurrency = $exch['cc'];
             $currency->save();
-        } 
+        }
+        $currency = new Currency;
+        $currency->namecurrency = 'Українська гривня';
+        $currency->codecurrency = 'UAH';
+        $currency->flagbase = 1;
+        $currency->save();
        
     }
 
