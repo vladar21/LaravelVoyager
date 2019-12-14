@@ -31,22 +31,26 @@ class Currency extends Model
         
         $codes = Currency::all()->where('flagwork', 1);
                         
-        $string = 'Date';
+        $str = ['Date'];       
         foreach($codes as $code){           
-           $string .= ", ".$code->codecurrency;            
+           array_push($str, $code->codecurrency);            
         }
-        
-        $result[] = [$string];
+        $result[] = $str;
+        //array_push($result, $str);
+        //dd($result);
         //dd(json_encode($result));
 
-        foreach($temp as $t){    
-            $string[] = [Carbon::create($t[0]->date)->format('d.m.y')];                    
+        foreach($temp as $t){  
+            $stroka = [Carbon::create($t[0]->date)->format('d.m.y')];                    
             foreach($t as $t1){
-                array_push($string, $t1->value);
+                //dd($t);
+                array_push($stroka, (float)$t1->value);
             }
-            array_push($result, $string);
+            //dd($stroka);
+            array_push($result, $stroka);
+            $stroka = [];
         }
-        dd($result);
+       
 
         return json_encode($result);
     }
