@@ -18,20 +18,37 @@ class Currency extends Model
 
     public static function charttable()
     {
-        $chart = DB::table('currencies')
-            ->leftJoin('rates', 'currencies.id', '=', 'rates.currency_id')
-            ->where('currencies.flagwork', '=', 1, 'and', 'currencies.flagbase', '=', 1)
-            ->orderby('rates.date')
+        $temp = DB::table('rates')
+            ->select('date', 'currencies.codecurrency as code', 'value')
+            ->leftJoin('currencies', 'currencies.id', '=', 'currency_id')
+            ->where('currencies.flagwork', '=', 1)
+            ->orderby('date')            
             ->get();
-       
 
-        $result[] = ['Date','Code','Value'];
-        foreach ($chart as $key => $value) {
+        $temp = $temp->groupBy(function($item) {
+            return $item->date;
+        });
+        
+        $codes = Currency::all()->where('flagwork', 1);
+                        
+        $string = 'Date';
+        foreach($codes as $code){           
+           $string .= ", ".$code->codecurrency;            
+        }
+        
+        $result[] = [$string];
+        //dd(json_encode($result));
 
-            $result[++$key] = [$value->date, $value->codecurrency, (int)$value->value];
-
+        foreach($temp as $t){    
+            $string[] = [Carbon::create($t[0]->date)->format('d.m.y')];                    
+            foreach($t as $t1){
+                array_push($string, $t1->value);
+            }
+            array_push($result, $string);
         }
         dd($result);
+
+        return json_encode($result);
     }
     // public static function add($fields)
     // {

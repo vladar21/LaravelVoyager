@@ -71,17 +71,18 @@ class CurrencyController extends Controller
             //dd($prev->id);
             \App\Currency::flagworkinstall($prev->id);
         }
-        \App\Currency::charttable();
-        return view('chart');//->with('currencies', $currencies);
+        $result = \App\Currency::charttable();
+        //dd($result);
+        return view('chart')->with('result', $result);
     }
 
-    public function getcurrency(Request $request)
-    {
-        $RequestUri = $request->getRequestUri();
-        $fields = \App\Currency::api($RequestUri);
-        dd($fields);
-        //$currency = \App\Currency::add($fields);
-        dd($currency);
-        //return redirect()->route('rates.index');
-    }
+    // public function getcurrency(Request $request)
+    // {
+    //     $RequestUri = $request->getRequestUri();
+    //     $fields = \App\Currency::api($RequestUri);
+    //     dd($fields);
+    //     //$currency = \App\Currency::add($fields);
+    //     dd($currency);
+    //     //return redirect()->route('rates.index');
+    // }
 }
