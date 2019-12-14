@@ -71,7 +71,7 @@ class CurrencyController extends Controller
             //dd($prev->id);
             \App\Currency::flagworkinstall($prev->id);
         }
-
+        \App\Currency::charttable();
         return view('chart');//->with('currencies', $currencies);
     }
 

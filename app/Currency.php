@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Rate;
 use Carbon\Carbon;
 
@@ -15,12 +16,29 @@ class Currency extends Model
         return $this->hasMany('App\Rate');
     }
 
-    public static function add($fields)
+    public static function charttable()
     {
-        $rate = new static;
-        $rate->fill($fields);
-        $rate->save();
+        $chart = DB::table('currencies')
+            ->leftJoin('rates', 'currencies.id', '=', 'rates.currency_id')
+            ->where('currencies.flagwork', '=', 1, 'and', 'currencies.flagbase', '=', 1)
+            ->orderby('rates.date')
+            ->get();
+       
+
+        $result[] = ['Date','Code','Value'];
+        foreach ($chart as $key => $value) {
+
+            $result[++$key] = [$value->date, $value->codecurrency, (int)$value->value];
+
+        }
+        dd($result);
     }
+    // public static function add($fields)
+    // {
+    //     $rate = new static;
+    //     $rate->fill($fields);
+    //     $rate->save();
+    // }
     public static function flagbasereset()
     {
         $prev = \App\Currency::where('flagbase', 1)->get()->first();
@@ -87,60 +105,60 @@ class Currency extends Model
        
     }
 
-    public static function api($RequestUri)
-    {
+    // public static function api($RequestUri)
+    // {
        
-        // set API Endpoint and API key 
-        if (count(explode("/",$RequestUri))>1)
-        {
-            $endpoint = explode("?", explode("/",$RequestUri)[2])[0];
-            $url = explode("?", explode("/",$RequestUri)[2])[1];
-            $arrayurl = explode("&", $url);
-            $urlapi = "";
-            $symbols = "&symbols=";
-            foreach($arrayurl as $a)
-            {
-                if (strpos($a, "symbols") !== false) 
-                {
-                    $symbols = $symbols.explode("=", $a)[1].",";
+    //     // set API Endpoint and API key 
+    //     if (count(explode("/",$RequestUri))>1)
+    //     {
+    //         $endpoint = explode("?", explode("/",$RequestUri)[2])[0];
+    //         $url = explode("?", explode("/",$RequestUri)[2])[1];
+    //         $arrayurl = explode("&", $url);
+    //         $urlapi = "";
+    //         $symbols = "&symbols=";
+    //         foreach($arrayurl as $a)
+    //         {
+    //             if (strpos($a, "symbols") !== false) 
+    //             {
+    //                 $symbols = $symbols.explode("=", $a)[1].",";
                     
-                    continue;
-                }
+    //                 continue;
+    //             }
                 
-                $urlapi = $urlapi."&".$a;
-            }
-            $symbols = mb_substr($symbols, 0, -1);
-            $urlapi = $urlapi.$symbols;
-        }
-        else
-        {
-            $endpoint = $RequestUri;
-            $urlapi = "";
-        }
+    //             $urlapi = $urlapi."&".$a;
+    //         }
+    //         $symbols = mb_substr($symbols, 0, -1);
+    //         $urlapi = $urlapi.$symbols;
+    //     }
+    //     else
+    //     {
+    //         $endpoint = $RequestUri;
+    //         $urlapi = "";
+    //     }
         
-        //dd($urlapi);
+    //     //dd($urlapi);
         
-        $access_key = '8e996550c4c1e3a717f4bb88f4173fec';
+    //     $access_key = '8e996550c4c1e3a717f4bb88f4173fec';
         
-        dd('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.$urlapi);
-        // Initialize CURL:
-        $ch = curl_init('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.'&'.$urlapi);
+    //     dd('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.$urlapi);
+    //     // Initialize CURL:
+    //     $ch = curl_init('http://data.fixer.io/api/'.$endpoint.'?access_key='.$access_key.'&'.$urlapi);
         
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        // Store the data:
-        $json = curl_exec($ch);
-        curl_close($ch);
+    //     // Store the data:
+    //     $json = curl_exec($ch);
+    //     curl_close($ch);
       
-        // Decode JSON response:
-        $exchangeRates = json_decode($json, true);
+    //     // Decode JSON response:
+    //     $exchangeRates = json_decode($json, true);
         
-        // Access the exchange rate values, e.g. GBP:
-        //echo $exchangeRates['rates']['GBP'];
-        //$namecurrency =  array_keys($exchangeRates['rates']);
-        //$namecurrency->all();
+    //     // Access the exchange rate values, e.g. GBP:
+    //     //echo $exchangeRates['rates']['GBP'];
+    //     //$namecurrency =  array_keys($exchangeRates['rates']);
+    //     //$namecurrency->all();
 
         
-        return $exchangeRates;
-    }
+    //     return $exchangeRates;
+    // }
 }
