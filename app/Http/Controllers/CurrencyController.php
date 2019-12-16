@@ -17,8 +17,7 @@ class CurrencyController extends Controller
         
         $rates = Rate::all('date');    
         
-        $dates = ($rates && $rates->count())?(Rate::all('date')->pluck('date')[0]):($currentDate);         
-        
+        $dates = ($rates && $rates->count())?(Rate::all('date')->pluck('date')[0]):($currentDate);      
         if ($dates != $currentDate)
         {
         $nothing = false;               
@@ -39,50 +38,35 @@ class CurrencyController extends Controller
 
     public function getnbu(Request $request)
     {
-        //dd($request);
         $parametrs = $request->query('base');
-        //dd($parametrs);
 
         // устанавливаем базовую валюту
 
         \App\Currency::flagbasereset();
        
         $prev = \App\Currency::where('codecurrency', $parametrs)->get()->first();
-        //dd($prev->id);
+
         if ($prev && $prev->count()) 
         {
            $id = $prev->id;
         }
         
-        //dd($id);
         \App\Currency::flagbaseinstall($id);
         
         // Сбрасываем предыдущие рабочие валюты
         \App\Currency::flagworkreset();
         // устанавливаем рабочие валюты   
-        //$parametrs = $request->get(['symbols']);//->groupBy('symbols')->keys()->all();
         $parametrs = $request->query('symbols');
 
-        //dd($parametrs);
         foreach($parametrs as $parametr)
         {
             
             $prev = \App\Currency::where('codecurrency', $parametr)->get()->first();
-            //dd($prev->id);
             \App\Currency::flagworkinstall($prev->id);
         }
         $result = \App\Currency::charttable();
-        //dd($result);
+
         return view('chart')->with('result', $result);
     }
 
-    // public function getcurrency(Request $request)
-    // {
-    //     $RequestUri = $request->getRequestUri();
-    //     $fields = \App\Currency::api($RequestUri);
-    //     dd($fields);
-    //     //$currency = \App\Currency::add($fields);
-    //     dd($currency);
-    //     //return redirect()->route('rates.index');
-    // }
 }

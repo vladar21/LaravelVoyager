@@ -16,8 +16,6 @@ Route::get('/', function () {
 });
 
 Route::get('/currency', 'CurrencyController@index');
-Route::get('/api/{request}', 'CurrencyController@getcurrency');
-//Route::get('/nbu/{request}', 'CurrencyController@getnbu');
 Route::get('nbu', array('as' => 'parametrs',
                                  'uses' => 'CurrencyController@getnbu'));
 

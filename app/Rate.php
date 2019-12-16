@@ -23,22 +23,16 @@ class Rate extends Model
         $weekenddays = $finishDate->diffInWeekendDays($startDate);
         
         $finishDate = $finishDate->subDays($weekenddays);
-        //dd($startDate);
-        //dd($finishDate);
         
         do{
             if ($startDate->format('w') != 6 || $startDate->format('w') != 0)
             {
                 $ch = curl_init('https://old.bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date='.$startDate->format('Ymd').'&json');
                 
-                //dd($ch);
-            
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                // Store the data:
+
                 $json = curl_exec($ch);
 
-                //dd($json);
-                
                 curl_close($ch);
             
                 $exchangeRates = json_decode($json, true);
@@ -62,8 +56,6 @@ class Rate extends Model
              
          }
          while($startDate > $finishDate);
-
-        
        
     }
 }
