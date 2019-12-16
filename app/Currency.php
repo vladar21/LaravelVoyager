@@ -51,21 +51,26 @@ class Currency extends Model
         return json_encode($result);
     }
     
-    public static function flagbasereset()
+    public static function flagbaseinstall($id)
     {
         $prev = \App\Currency::where('flagbase', 1)->get()->first();
-
         if ($prev && $prev->count()) 
         {
             $prev->flagbase = 0;
             $prev->save();
         }
-    }
-    public static function flagbaseinstall($id)
-    {
+
         $basecurrency = \App\Currency::find($id);
         $basecurrency->flagbase = 1;
         $basecurrency->save();
+        
+        // пересчет базовой валюты, но без количества единиц валюты, по которому НБУ делал рачет - не имеет смысла. API НБУ эту цифру не дает
+        
+        $rates = \App\Rate::all();
+        foreach($rates as $rate){
+
+        }
+
     }
     public static function flagworkreset()
     {

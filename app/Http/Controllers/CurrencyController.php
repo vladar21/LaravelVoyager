@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Currency;
@@ -42,8 +41,6 @@ class CurrencyController extends Controller
 
         // устанавливаем базовую валюту
 
-        \App\Currency::flagbasereset();
-       
         $prev = \App\Currency::where('codecurrency', $parametrs)->get()->first();
 
         if ($prev && $prev->count()) 
