@@ -30,7 +30,7 @@ class CurrencyController extends Controller
             \App\Rate::indexNbu($currentDate);
         }
        
-        $currencies = Currency::all()->sortBy('namecurrency');//all('namecurrency')->pluck('namecurrency');
+        $currencies = Currency::all()->sortBy('namecurrency');
        
         return view('currency')->with('currencies', $currencies);
     }

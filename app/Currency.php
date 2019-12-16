@@ -64,12 +64,12 @@ class Currency extends Model
         $basecurrency->flagbase = 1;
         $basecurrency->save();
         
-        // пересчет базовой валюты, но без количества единиц валюты, по которому НБУ делал рачет - не имеет смысла. API НБУ эту цифру не дает
+        // далее должен идти пересчет курсов по базовой валюте, но без количества единиц валюты, по которому НБУ делал расчет - не имеет смысла. API НБУ эту цифру не дает.
         
-        $rates = \App\Rate::all();
-        foreach($rates as $rate){
+        // $rates = \App\Rate::all();
+        // foreach($rates as $rate){
 
-        }
+        // }
 
     }
     public static function flagworkreset()
